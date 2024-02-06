@@ -15,4 +15,8 @@ class Service {
   fun all(): Either<String, List<Abbreviation>> {
     return Right(store.all())
   }
+
+  fun search(query: String): Either<String, List<Abbreviation>> {
+    return Right(store.search(query))
+  }
 }
