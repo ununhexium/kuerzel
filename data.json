@@ -1,0 +1,24 @@
+{
+  "list": [
+    {
+      "abbreviation": "QWE",
+      "full": "qwerty"
+    },
+    {
+      "abbreviation": "Laser",
+      "full": "light amplification by stimulated emission of radiation"
+    },
+    {
+      "abbreviation": "HTTP",
+      "full": "Hypertext Transfer Protocol"
+    },
+    {
+      "abbreviation": "CSS",
+      "full": "Cascading Style Sheets"
+    },
+    {
+      "abbreviation": "SQL",
+      "full": "Structured Query Language"
+    }
+  ]
+}

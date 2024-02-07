@@ -2,10 +2,11 @@ package dev.c15u.kuerzel
 
 import arrow.core.Either
 import arrow.core.Either.Right
+import java.nio.file.Paths
 
 class Service {
 
-  private val store = Store()
+  private val store = JsonStore(Paths.get("./data.json"))
 
   fun add(abbreviation: Abbreviation): Either<String, Abbreviation> {
     store.save(abbreviation)

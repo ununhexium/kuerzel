@@ -8,13 +8,15 @@ repositories {
 }
 
 dependencies {
+
+  val arrow = "1.2.0"
+  implementation("io.arrow-kt:arrow-core:${arrow}")
+
   implementation(platform("org.http4k:http4k-bom:5.13.2.0"))
   implementation("org.http4k:http4k-core")
   implementation("org.http4k:http4k-server-undertow")
   implementation("org.http4k:http4k-format-kotlinx-serialization")
-
-  val arrow = "1.2.0"
-  implementation("io.arrow-kt:arrow-core:${arrow}")
+  implementation("org.http4k:http4k-multipart")
 
   //Fill this in with the version of kotlinx in use in your project
   val kotlinxHtmlVersion = "0.11.0"

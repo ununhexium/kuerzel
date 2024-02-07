@@ -1,11 +1,17 @@
 package dev.c15u.kuerzel
 
+import kotlinx.html.head
+import kotlinx.html.html
+import kotlinx.html.meta
+import kotlinx.html.stream.createHTML
 import org.http4k.core.Body
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.body.form
 import org.http4k.core.with
 import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.Query
@@ -18,23 +24,53 @@ import org.http4k.server.asServer
 val routed = { service: Service ->
   val web = Web(service)
 
-  routes("/api/add" bind POST to {
-    service.add(Abbreviation.lens(it))
-      .fold({ Response(BAD_REQUEST) }, { Response(OK).with(Abbreviation.lens of it) })
-  }, "/api/all" bind GET to {
-    service.all().fold({ Response(BAD_REQUEST).body(it) },
-      { Response(OK).with(Body.auto<List<Abbreviation>>().toLens() of it) })
-  }, "/style.css" bind GET to {
-    Response(OK).body(
-      Abbreviation::class.java.getResourceAsStream("/style.css")?.reader()?.readText() ?: ""
-    )
-  }, "/web/filter" bind GET to {
-    Response(OK).body(
-      web.filter(Query.string().required("q")(it))
-    )
-  }, "/index.html" bind GET to {
-    Response(OK).body(web.index())
-  })
+  routes(
+    "/api/add" bind POST to {
+      service.add(Abbreviation.lens(it))
+        .fold({ Response(BAD_REQUEST) }, { Response(OK).with(Abbreviation.lens of it) })
+    },
+    "/api/all" bind GET to {
+      service.all().fold({ Response(BAD_REQUEST).body(it) },
+        { Response(OK).with(Body.auto<List<Abbreviation>>().toLens() of it) })
+    },
+    "/style.css" bind GET to {
+      Response(OK).body(
+        Abbreviation::class.java.getResourceAsStream("/style.css")?.reader()?.readText() ?: ""
+      )
+    },
+    "/index.html" bind GET to {
+      Response(OK).body(web.index())
+    },
+    "/form/add" bind POST to {
+      val abbreviation = it.form("abbreviation") ?: ""
+      val full = it.form("full") ?: ""
+      service.add(Abbreviation(abbreviation, full))
+        .fold({ Response(BAD_REQUEST) }, { Response(OK).with(Abbreviation.lens of it) })
+      Response(Status.MOVED_PERMANENTLY).header("Location", "/index.html")
+//      Response(Status.MOVED_PERMANENTLY).body(
+//        // <meta http-equiv="refresh" content="0; url=http://example.com/" />
+//        createHTML(true).html {
+//          head {
+//            meta {
+//              attributes["http-equiv"] = "refresh"
+//              attributes["content"] = "0"
+//              attributes["url"] = "/index.html"
+//            }
+//          }
+//        }
+//      )
+    },
+    "/web/add" bind GET to {
+      Response(OK).body(
+        web.add()
+      )
+    },
+    "/web/filter" bind GET to {
+      Response(OK).body(
+        web.filter(Query.string().required("q")(it))
+      )
+    }
+  )
 }
 
 fun main() {
