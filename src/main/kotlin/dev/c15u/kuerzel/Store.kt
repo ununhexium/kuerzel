@@ -1,5 +1,7 @@
 package dev.c15u.kuerzel
 
+import kotlin.math.min
+
 class Store {
 
   private val data = mutableListOf<Abbreviation>(
@@ -20,6 +22,20 @@ class Store {
     return data.filter {
       it.abbreviation.contains(query, ignoreCase = true) ||
           it.full.contains(query, ignoreCase = true)
+    }
+  }
+
+  fun search(query: String, distance: (String, String) -> Int): List<Abbreviation> {
+    return data.filter {
+      min(
+        distance(it.abbreviation, query),
+        distance(it.full, query)
+      ) < 10
+    }.sortedBy {
+      min(
+        distance(it.abbreviation, query),
+        distance(it.full, query)
+      )
     }
   }
 }

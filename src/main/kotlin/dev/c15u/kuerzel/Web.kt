@@ -34,7 +34,7 @@ class Web(val service: Service) {
             input(type = InputType.text, name = "q") {
               placeholder = "Search here"
               attributes["hx-get"] = "/web/filter"
-              attributes["hx-trigger"] = "keyup delay:100ms changed"
+              attributes["hx-trigger"] = "keyup changed"
               attributes["hx-target"] = "#search-results"
               attributes["autofocus"] = ""
             }
@@ -78,7 +78,7 @@ class Web(val service: Service) {
     return res
   }
 
-  private inline fun HtmlBlockTag.resultsTable(
+  private fun HtmlBlockTag.resultsTable(
     results: Either<String, List<Abbreviation>>,
     highlight: String? = null
   ) {
