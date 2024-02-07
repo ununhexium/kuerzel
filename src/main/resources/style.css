@@ -2,3 +2,8 @@
   text-align: center;
   margin: 2em;
 }
+
+.highlight {
+  color: red;
+  font-weight: bold;
+}
