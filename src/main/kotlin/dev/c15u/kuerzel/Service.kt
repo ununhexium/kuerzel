@@ -13,15 +13,11 @@ class Service {
     return Right(abbreviation)
   }
 
-  fun all(): Either<String, List<Abbreviation>> {
+  fun all(): Either<String, List<Pair<Abbreviation, Double>>> {
     return Right(store.all())
   }
 
-  fun search(query: String): Either<String, List<Abbreviation>> {
+  fun search(query: String): Right<List<Pair<Abbreviation, Double>>> {
     return Right(store.search(query))
-  }
-
-  fun search(query: String, distance: (String, String) -> Int): Either<String, List<Abbreviation>> {
-    return Right(store.search(query, distance))
   }
 }

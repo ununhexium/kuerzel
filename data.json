@@ -19,6 +19,22 @@
     {
       "abbreviation": "SQL",
       "full": "Structured Query Language"
+    },
+    {
+      "abbreviation": "XML",
+      "full": "eXtendable Markup Language"
+    },
+    {
+      "abbreviation": "XSS",
+      "full": "Cross-site scripting"
+    },
+    {
+      "abbreviation": "ASAP",
+      "full": "As Soon As Possible"
+    },
+    {
+      "abbreviation": "PHP",
+      "full": "PHP Hypertext Processor"
     }
   ]
 }

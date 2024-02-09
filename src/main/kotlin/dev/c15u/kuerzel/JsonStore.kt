@@ -3,7 +3,6 @@ package dev.c15u.kuerzel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.nio.file.Path
-import kotlin.math.min
 
 class JsonStore(val location: Path) : Store {
 
@@ -29,27 +28,25 @@ class JsonStore(val location: Path) : Store {
     }
   }
 
-  fun all(): List<Abbreviation> =
-    data.toList()
+  fun all(): List<Pair<Abbreviation, Double>> =
+    data.toList().map { it to 0.0 }
 
-  fun search(query: String): List<Abbreviation> {
-    return data.filter {
-      it.abbreviation.contains(query, ignoreCase = true) ||
-          it.full.contains(query, ignoreCase = true)
-    }
-  }
+  fun search(query: String): List<Pair<Abbreviation, Double>> {
+    val exact = data
+      .filter {
+        it.abbreviation.contains(query, ignoreCase = true) ||
+            it.full.contains(query, ignoreCase = true)
+      }
 
-  fun search(query: String, distance: (String, String) -> Int): List<Abbreviation> {
-    return data.filter {
-      min(
-        distance(it.abbreviation, query),
-        distance(it.full, query)
-      ) < 10
-    }.sortedBy {
-      min(
-        distance(it.abbreviation, query),
-        distance(it.full, query)
-      )
-    }
+    val byDistance = data
+      .asSequence()
+      .filter { it !in exact }
+      .map { it to myDistance(it.abbreviation, query) }
+      .filter { it.second < 100 }
+      .sortedBy { it.second }
+      .map { it.first to it.second.toDouble() }
+      .toList()
+
+    return exact.map { it to 0.0 } + byDistance
   }
 }

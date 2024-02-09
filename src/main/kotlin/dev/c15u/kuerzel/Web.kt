@@ -90,7 +90,7 @@ class Web(val service: Service) {
   }
 
   private fun HtmlBlockTag.resultsTable(
-    results: Either<String, List<Abbreviation>>,
+    results: Either<String, List<Pair<Abbreviation, Double>>>,
     highlight: String? = null
   ) {
     div(classes = "container") {
@@ -98,18 +98,33 @@ class Web(val service: Service) {
         id = "search-results"
         table(classes = "table") {
           tr {
+            th { +"Accuracy" }
             th { +"Abbreviation" }
             th { +"Full" }
           }
           results.fold(
             {},
             {
-              it.forEach { a ->
-                tr {
-                  highlightedTableDivision(highlight, a.abbreviation)
-                  highlightedTableDivision(highlight, a.full)
+              it
+                .filter { it.second == 0.0 }
+                .forEach { a ->
+                  tr {
+                    td { +"0" }
+                    highlightedTableDivision(highlight, a.first.abbreviation)
+                    highlightedTableDivision(highlight, a.first.full)
+                  }
                 }
-              }
+              tr { }
+              it
+                .filter { it.second > 0 }
+                .sortedBy { it.second }
+                .forEach { a ->
+                  tr {
+                    td { +a.second.toString() }
+                    highlightedTableDivision(highlight, a.first.abbreviation)
+                    highlightedTableDivision(highlight, a.first.full)
+                  }
+                }
             }
           )
         }
@@ -149,13 +164,14 @@ class Web(val service: Service) {
       body {
         container {
           form {
-            attributes["hx-post"] = "/form/add"
+            attributes["hx-post"] = "/index.html"
             textInput("Abbreviation", "abbreviation")
             br {}
             textInput("Full", "full")
             br {}
             br {}
             input(type = InputType.submit) {
+              attributes["onclick"] = "window.location.href = '/index.html';"
             }
           }
         }

@@ -31,7 +31,7 @@ val routed = { service: Service ->
     },
     "/api/all" bind GET to {
       service.all().fold({ Response(BAD_REQUEST).body(it) },
-        { Response(OK).with(Body.auto<List<Abbreviation>>().toLens() of it) })
+        { Response(OK).with(Body.auto<List<Abbreviation>>().toLens() of it.map { it.first }) })
     },
     "/style.css" bind GET to {
       Response(OK).body(
@@ -41,24 +41,12 @@ val routed = { service: Service ->
     "/index.html" bind GET to {
       Response(OK).body(web.index())
     },
-    "/form/add" bind POST to {
+    "/index.html" bind POST to {
       val abbreviation = it.form("abbreviation") ?: ""
       val full = it.form("full") ?: ""
       service.add(Abbreviation(abbreviation, full))
         .fold({ Response(BAD_REQUEST) }, { Response(OK).with(Abbreviation.lens of it) })
-      Response(Status.MOVED_PERMANENTLY).header("Location", "/index.html")
-//      Response(Status.MOVED_PERMANENTLY).body(
-//        // <meta http-equiv="refresh" content="0; url=http://example.com/" />
-//        createHTML(true).html {
-//          head {
-//            meta {
-//              attributes["http-equiv"] = "refresh"
-//              attributes["content"] = "0"
-//              attributes["url"] = "/index.html"
-//            }
-//          }
-//        }
-//      )
+      Response(OK).body(web.index())
     },
     "/web/add" bind GET to {
       Response(OK).body(

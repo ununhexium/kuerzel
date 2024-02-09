@@ -9,6 +9,8 @@ repositories {
 
 dependencies {
 
+  implementation("com.willowtreeapps.assertk:assertk:0.28.0")
+
   val arrow = "1.2.0"
   implementation("io.arrow-kt:arrow-core:${arrow}")
 

@@ -1,58 +1,34 @@
 package dev.c15u.kuerzel
 
-import kotlin.math.min
+fun myDistance(x: String, y: String): Int {
 
-/**
- * From
- * https://en.wikipedia.org/wiki/Levenshtein_distance
- *
- * Iterative with two matrix rows
- */
-fun levenshteinDistance(s: String, t: String): Int {
-  var v0 = MutableList(t.length + 1) { it }
-  var v1 = MutableList(t.length + 1) { it }
-
-  for (i in s.indices) {
-    v1[0] = i + 1
-
-    for (j in t.indices) {
-      val deletionCost = v0[j + 1] + 1
-      val insertionCost = v1[j] + 1
-      val substitutionCost = if (s[i] == t[j]) v0[j] else v0[j] + 1
-
-      v1[j + 1] = min(deletionCost, min(insertionCost, substitutionCost))
-    }
-    v0 = v1
+  if (x.isEmpty()) {
+    return y.length * 10
   }
 
-  return v0[t.length]
+  if (y.isEmpty()) {
+    return x.length * 10
+  }
 
-  /*
-  function LevenshteinDistance(char s[0..m-1], char t[0..n-1]):
-    declare int v0[n + 1]
-    declare int v1[n + 1]
+  if (x[0].toString().equals(y[0].toString(), ignoreCase = true)) {
+    return myDistance(x.substring(1), y.substring(1))
+  } else {
 
-    for i from 0 to n:
-        v0[i] = i
+    val swap = if (y.contains(x[0], ignoreCase = true)) {
+      val where = y.indexOf(x[0], ignoreCase = true)
+      val y2 = y.take(where) + y.drop(where + 1)
+      myDistance(x.substring(1), y2) + where
+    } else if (x.contains(y[0], ignoreCase = true)) {
+      val where = x.indexOf(y[0], ignoreCase = true)
+      val x2 = x.take(where) + x.drop(where + 1)
+      myDistance(y.substring(1), x2) + where
+    } else Int.MAX_VALUE
 
-    for i from 0 to m - 1:
-        v1[0] = i + 1
+    // IDEA: adapt this to be proportional to the distance of the keys on the keyboard
+    val substitution = myDistance(x.substring(1), y.substring(1)) + 10
+    val insertion = myDistance(x, y.substring(1)) + 10
+    val deletion = myDistance(x.substring(1), y) + 10
 
-        for j from 0 to n - 1:
-            // calculating costs for A[i + 1][j + 1]
-            deletionCost := v0[j + 1] + 1
-            insertionCost := v1[j] + 1
-            if s[i] = t[j]:
-                substitutionCost := v0[j]
-            else:
-                substitutionCost := v0[j] + 1
-
-            v1[j + 1] := minimum(deletionCost, insertionCost, substitutionCost)
-
-        // copy v1 (current row) to v0 (previous row) for next iteration
-        // since data in v1 is always invalidated, a swap without copy could be more efficient
-        swap v0 with v1
-    // after the last swap, the results of v1 are now in v0
-    return v0[n]
-   */
+    return listOf(substitution, insertion, deletion, swap).min()
+  }
 }
