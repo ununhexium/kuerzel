@@ -20,6 +20,7 @@ import java.nio.file.Paths
 val routed = { service: Service ->
   val web = Web(service)
 
+  // TODO: get as CSV
   routes(
     "/api/add" bind POST to {
       val a = Abbreviation.lens(it)
@@ -46,7 +47,7 @@ val routed = { service: Service ->
       Response(OK).body(web.index())
     },
     "/web/add.html" bind POST to {
-      val abbreviation = it.form("abbreviation") ?: ""
+      val abbreviation = it.form("short") ?: ""
       val full = it.form("full") ?: ""
       service.add(abbreviation, full)
         .fold({ Response(BAD_REQUEST) }, { Response(OK).with(AbbreviationHistory.lens of it) })
@@ -62,11 +63,11 @@ val routed = { service: Service ->
         web.edit(Query.required("id")(it))
       )
     },
-    "/web/edit.html" bind POST to {
+    "/web/edit" bind POST to {
       service.update(
-        Query.required("id")(it),
-        Query.required("abbreviation")(it),
-        Query.required("full")(it),
+        it.form("id") ?: "",
+        it.form("short") ?: "",
+        it.form("full") ?: "",
       ).fold(
         {
           Response(OK).body(

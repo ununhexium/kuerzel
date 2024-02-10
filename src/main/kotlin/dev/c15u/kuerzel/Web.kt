@@ -1,6 +1,6 @@
 package dev.c15u.kuerzel
 
-import arrow.core.Either
+import arrow.core.getOrElse
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
@@ -38,7 +38,9 @@ class Web(val service: Service) {
             }
           }
 
-          resultsTable(service.all().map { it.map { it to 1.0 } })
+          resultsTable(service.all().map { it.map { it to 1.0 } }.getOrElse {
+            throw RuntimeException(it)
+          })
         }
       }
     }.toString()
@@ -94,7 +96,7 @@ class Web(val service: Service) {
   }
 
   private fun HtmlBlockTag.resultsTable(
-    results: Either<String, List<Pair<AbbreviationHistory, Double>>>,
+    results: List<Pair<AbbreviationHistory, Double>>,
     highlight: String? = null
   ) {
     div(classes = "container") {
@@ -106,37 +108,33 @@ class Web(val service: Service) {
             th { +"Abbreviation" }
             th { +"Full" }
           }
-          results.fold(
-            {},
-            {
-              it
-                .filter { it.second == 0.0 }
-                .forEach { a ->
-                  tr {
-                    td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
-                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
-                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
-                  }
-                }
+
+          results
+            .filter { it.second == 0.0 }
+            .forEach { a ->
               tr {
-                id = "split"
-                td {
-                  colSpan = "3"
-                  +"―― Fuzzy ――"
-                }
+                td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
+                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
               }
-              it
-                .filter { it.second > 0 }
-                .sortedBy { it.second }
-                .forEach { a ->
-                  tr {
-                    td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
-                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
-                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
-                  }
-                }
             }
-          )
+          tr {
+            id = "split"
+            td {
+              colSpan = "3"
+              +"―― Fuzzy ――"
+            }
+          }
+          results
+            .filter { it.second > 0 }
+            .sortedBy { it.second }
+            .forEach { a ->
+              tr {
+                td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
+                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
+              }
+            }
         }
       }
     }
@@ -163,7 +161,7 @@ class Web(val service: Service) {
   fun filter(query: String): String {
     return buildString {
       appendHTML().div {
-        resultsTable(service.search(query), query)
+        resultsTable(service.search(query).getOrElse { listOf() }, query)
       }
     }
   }
@@ -175,7 +173,7 @@ class Web(val service: Service) {
         container {
           form {
             attributes["hx-post"] = "/web/add.html"
-            textInput("Abbreviation", "abbreviation")
+            textInput("Abbreviation", "short")
             br {}
             textInput("Full", "full")
             br {}
@@ -226,21 +224,51 @@ class Web(val service: Service) {
                 attributes["onclick"] = "window.location.href = '/index.html';"
               }
             },
-            {
-              form {
-                attributes["hx-post"] = "/web/edit.html"
-                textInput("Abbreviation", "abbreviation", it.mostRecent().abbreviation.short)
-                br {}
-                textInput("Full", "full", it.mostRecent().abbreviation.full)
-                br {}
-                br {}
-                input(type = InputType.hidden) {
-                  attributes["id"] = id
-                  attributes["name"] = id
-                  attributes["value"] = id
+            { h ->
+              div(classes = "container") {
+
+                h2 { +"Update" }
+
+                div(classes = "container") {
+                  form {
+                    attributes["hx-post"] = "/web/edit"
+                    textInput("Abbreviation", "short", h.mostRecent().abbreviation.short)
+                    br {}
+                    textInput("Full", "full", h.mostRecent().abbreviation.full)
+                    br {}
+                    br {}
+                    input(type = InputType.hidden) {
+                      attributes["id"] = id
+                      attributes["name"] = "id"
+                      attributes["value"] = id
+                    }
+                    input(type = InputType.submit) {
+                      attributes["onclick"] = "window.location.href = '/index.html';"
+                    }
+                  }
                 }
-                input(type = InputType.submit) {
-                  attributes["onclick"] = "window.location.href = '/index.html';"
+
+                h3 { +"History" }
+
+                div(classes = "container") {
+                  div(classes = "row justify-content-center") {
+                    this.id = "edit-history"
+                    table(classes = "table") {
+                      tr {
+                        th { +"Date" }
+                        th { +"Abbreviation" }
+                        th { +"Full" }
+                      }
+
+                      h.revisions.sortedByDescending { it.date }.forEach { r ->
+                        tr {
+                          td { +r.date.replace("T", " ").takeWhile { it != '.' } }
+                          td { +r.abbreviation.short }
+                          td { +r.abbreviation.full }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
