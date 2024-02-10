@@ -33,7 +33,14 @@ class Web(val service: Service) {
             div(classes = "container") {
               id = "add"
               a(href = "/web/add.html") {
-                +"Add"
+                i(classes = "fa fa-plus-circle")
+              }
+            }
+
+            container {
+              id = "csv-download"
+              a(href = "/api/all.csv") {
+                i(classes = "fa fa-download")
               }
             }
           }
@@ -57,7 +64,14 @@ class Web(val service: Service) {
         rel = "stylesheet",
         href = "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css"
       )
-      link(rel = "stylesheet", href = "/style.css")
+      link(
+        rel = "stylesheet",
+        href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      )
+      link(
+        rel = "stylesheet",
+        href = "/style.css"
+      )
 
       script(src = "https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.10/htmx.min.js") {
       }
@@ -113,7 +127,7 @@ class Web(val service: Service) {
             .filter { it.second == 0.0 }
             .forEach { a ->
               tr {
-                td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
               }
@@ -131,7 +145,7 @@ class Web(val service: Service) {
             .forEach { a ->
               tr {
                 style = "opacity: ${100.0 * (1.0 - (0.7 * a.second / Config.MAX_DIFFERENCE))}%"
-                td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
               }
