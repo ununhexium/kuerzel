@@ -46,7 +46,7 @@ val routed = { service: Service ->
     "/index.html" bind GET to {
       Response(OK).body(web.index())
     },
-    "/web/add.html" bind POST to {
+    "/web/add" bind POST to {
       val abbreviation = it.form("short") ?: ""
       val full = it.form("full") ?: ""
       service.add(abbreviation, full)

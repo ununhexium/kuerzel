@@ -130,7 +130,7 @@ class Web(val service: Service) {
             .sortedBy { it.second }
             .forEach { a ->
               tr {
-                style = "opacity: ${100.0 * (1.0 - (0.3 * a.second / Config.MAX_DIFFERENCE))}%"
+                style = "opacity: ${100.0 * (1.0 - (0.7 * a.second / Config.MAX_DIFFERENCE))}%"
                 td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
@@ -173,7 +173,7 @@ class Web(val service: Service) {
       body {
         container {
           form {
-            attributes["hx-post"] = "/web/add.html"
+            attributes["hx-post"] = "/web/add"
             textInput("Abbreviation", "short")
             br {}
             textInput("Full", "full")

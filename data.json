@@ -145,6 +145,30 @@
           }
         }
       ]
+    },
+    {
+      "id": "2d579532-1cc9-440f-8053-b9c8a382a5b1",
+      "revisions": [
+        {
+          "date": "2024-02-10T13:23:08.786849999",
+          "abbreviation": {
+            "short": "AC",
+            "full": "Air Conditioning"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a8cb77de-7193-4afa-8f76-46468179d426",
+      "revisions": [
+        {
+          "date": "2024-02-10T13:24:52.751709446",
+          "abbreviation": {
+            "short": "AC",
+            "full": "Alternative Current"
+          }
+        }
+      ]
     }
   ]
 }

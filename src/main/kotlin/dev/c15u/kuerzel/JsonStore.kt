@@ -78,6 +78,8 @@ class JsonStore(val location: Path) : Store {
       )
     )
 
+    data.add(element)
+
     save()
 
     return element
