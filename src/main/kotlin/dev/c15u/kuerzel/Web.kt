@@ -130,6 +130,7 @@ class Web(val service: Service) {
             .sortedBy { it.second }
             .forEach { a ->
               tr {
+                style = "opacity: ${100.0 * (1.0 - (0.3 * a.second / Config.MAX_DIFFERENCE))}%"
                 td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
                 highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
