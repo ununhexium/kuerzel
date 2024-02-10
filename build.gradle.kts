@@ -9,6 +9,8 @@ repositories {
 
 dependencies {
 
+  implementation("com.opencsv:opencsv:5.7.1")
+
   implementation("com.willowtreeapps.assertk:assertk:0.28.0")
 
   val arrow = "1.2.0"

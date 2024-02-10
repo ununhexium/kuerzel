@@ -3,6 +3,9 @@ package dev.c15u.kuerzel
 import arrow.core.Either
 import arrow.core.Either.Left
 import arrow.core.Either.Right
+import com.opencsv.CSVWriter
+import java.io.StringWriter
+
 
 class Service(private val store: JsonStore) {
 
@@ -24,5 +27,23 @@ class Service(private val store: JsonStore) {
 
   fun update(id: String, abbreviation: String, full: String): Either<Unit, Unit> {
     return Right(store.update(id, abbreviation, full))
+  }
+
+  fun allCsv(): Right<String> {
+    val all = store.all()
+
+    val sw = StringWriter()
+
+    CSVWriter(sw).use { writer ->
+      writer.writeNext(arrayOf("short", "full"))
+
+      all.forEach {
+        writer.writeNext(
+          arrayOf(it.mostRecent().abbreviation.short, it.mostRecent().abbreviation.full)
+        )
+      }
+    }
+
+    return Right(sw.toString())
   }
 }

@@ -37,6 +37,12 @@ val routed = { service: Service ->
             Body.auto<List<AbbreviationHistory>>().toLens() of it.map { it })
         })
     },
+    "/api/all.csv" bind GET to {
+      service.allCsv().fold(
+        { Response(BAD_REQUEST) },
+        { Response(OK).header("Content-Type", "test/csv").body(it) }
+      )
+    },
     "/style.css" bind GET to {
       Response(OK).body(
         AbbreviationHistory::class.java.getResourceAsStream("/style.css")?.reader()?.readText()

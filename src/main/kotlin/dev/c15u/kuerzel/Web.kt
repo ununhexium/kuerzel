@@ -172,15 +172,18 @@ class Web(val service: Service) {
       headers()
       body {
         container {
-          form {
-            attributes["hx-post"] = "/web/add"
-            textInput("Abbreviation", "short")
-            br {}
-            textInput("Full", "full")
-            br {}
-            br {}
-            input(type = InputType.submit) {
-              attributes["onclick"] = "window.location.href = '/index.html';"
+          h2 { +"Add" }
+          container {
+            form {
+              attributes["hx-post"] = "/web/add"
+              textInput("Abbreviation", "short")
+              br {}
+              textInput("Full", "full")
+              br {}
+              br {}
+              input(type = InputType.submit) {
+                attributes["onclick"] = "window.location.href = '/index.html';"
+              }
             }
           }
         }
@@ -203,11 +206,15 @@ class Web(val service: Service) {
     }
   }
 
-  private fun BODY.container(block: DIV.() -> Unit = {}) {
+  private fun BODY.container(block: DIV.() -> Unit = {}) =
     div(classes = "container") {
       block(this)
     }
-  }
+
+  private fun FlowContent.container(block: DIV.() -> Unit = {}) =
+    div(classes = "container") {
+      block(this)
+    }
 
   fun edit(id: String): String {
     val element = service.byId(id)
