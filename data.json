@@ -1,40 +1,136 @@
 {
   "list": [
     {
-      "abbreviation": "QWE",
-      "full": "qwerty"
+      "id": "3d1a62a3-6dee-4b15-b437-5e233b206f85",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.256128575",
+          "abbreviation": {
+            "short": "QWE",
+            "full": "qwerty"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "Laser",
-      "full": "light amplification by stimulated emission of radiation"
+      "id": "89cdf2ed-b075-4c28-bfe2-afbf2b1cbea6",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.271028241",
+          "abbreviation": {
+            "short": "Laser",
+            "full": "light amplification by stimulated emission of radiation"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "HTTP",
-      "full": "Hypertext Transfer Protocol"
+      "id": "44a97b9f-1de3-48a3-8041-5e60667af141",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.280092876",
+          "abbreviation": {
+            "short": "HTTP",
+            "full": "Hypertext Transfer Protocol"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "CSS",
-      "full": "Cascading Style Sheets"
+      "id": "0bc3f6bc-efd7-4f0e-be07-5a041a1300e3",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.289615493",
+          "abbreviation": {
+            "short": "CSS",
+            "full": "Cascading Style Sheets"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "SQL",
-      "full": "Structured Query Language"
+      "id": "6a0d1ebc-fdd6-4f80-af5e-9735bd32af64",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.301159864",
+          "abbreviation": {
+            "short": "SQL",
+            "full": "Structured Query Language"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "XML",
-      "full": "eXtendable Markup Language"
+      "id": "0ab88de0-8100-4be4-bbbc-860583782260",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.309786962",
+          "abbreviation": {
+            "short": "XML",
+            "full": "eXtendable Markup Language"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "XSS",
-      "full": "Cross-site scripting"
+      "id": "ba381d43-1061-4402-adb4-a1fe118e5911",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.318548746",
+          "abbreviation": {
+            "short": "XSS",
+            "full": "Cross-site scripting"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "ASAP",
-      "full": "As Soon As Possible"
+      "id": "a69c7c1b-9d93-4851-bd8b-bacd19ee3ec0",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.329608391",
+          "abbreviation": {
+            "short": "ASAP",
+            "full": "As Soon As Possible"
+          }
+        }
+      ]
     },
     {
-      "abbreviation": "PHP",
-      "full": "PHP Hypertext Processor"
+      "id": "3abc2434-dd40-46eb-b4fb-9219a93ddddc",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.337953749",
+          "abbreviation": {
+            "short": "PHP",
+            "full": "PHP Hypertext Processor"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b13ae435-b04c-4d9c-a641-442d8b8a2b39",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.346337508",
+          "abbreviation": {
+            "short": "OOP",
+            "full": "Object-oriented programming"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b0785b0b-921c-4b1d-ac97-9eef85921e5e",
+      "revisions": [
+        {
+          "date": "2024-02-10T12:29:30.357244917",
+          "abbreviation": {
+            "short": "AJAX",
+            "full": "Asynchronous Javascript and XML"
+          }
+        }
+      ]
     }
   ]
 }

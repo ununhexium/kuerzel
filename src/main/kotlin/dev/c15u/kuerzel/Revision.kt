@@ -5,11 +5,11 @@ import org.http4k.core.Body
 import org.http4k.format.KotlinxSerialization.auto
 
 @Serializable
-data class Abbreviation(
-  val short: String,
-  val full: String,
+data class Revision(
+  val date: String,
+  val abbreviation: Abbreviation
 ) {
   companion object {
-    val lens = Body.auto<Abbreviation>().toLens()
+    val lens = Body.auto<Revision>().toLens()
   }
 }

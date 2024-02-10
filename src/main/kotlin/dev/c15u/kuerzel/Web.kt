@@ -15,34 +15,38 @@ class Web(val service: Service) {
 
         script(src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js") { }
 
-        div {
-          div(classes = "container") {
-            id = "search"
-            input(type = InputType.text, name = "q") {
-              placeholder = "Search here"
-              attributes["hx-get"] = "/web/filter"
-              attributes["hx-trigger"] = "keyup changed"
-              attributes["hx-target"] = "#search-results"
-              attributes["autofocus"] = ""
+        div(classes = "container") {
+          div {
+            id = "toolbar"
+
+            div(classes = "container") {
+              id = "search"
+              input(type = InputType.text, name = "q") {
+                placeholder = "Search here"
+                attributes["hx-get"] = "/web/filter"
+                attributes["hx-trigger"] = "keyup changed"
+                attributes["hx-target"] = "#search-results"
+                attributes["autofocus"] = ""
+              }
+            }
+
+            div(classes = "container") {
+              id = "add"
+              a(href = "/web/add.html") {
+                +"Add"
+              }
             }
           }
 
-          div(classes = "container") {
-            id = "add"
-            a(href = "/web/add") {
-              +"Add"
-            }
-          }
-
-          resultsTable(service.all())
+          resultsTable(service.all().map { it.map { it to 1.0 } })
         }
-
       }
     }.toString()
   }
 
   private fun HTML.headers() {
     head {
+      meta { charset = "utf-8" }
       link(
         rel = "stylesheet",
         href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -90,7 +94,7 @@ class Web(val service: Service) {
   }
 
   private fun HtmlBlockTag.resultsTable(
-    results: Either<String, List<Pair<Abbreviation, Double>>>,
+    results: Either<String, List<Pair<AbbreviationHistory, Double>>>,
     highlight: String? = null
   ) {
     div(classes = "container") {
@@ -98,7 +102,7 @@ class Web(val service: Service) {
         id = "search-results"
         table(classes = "table") {
           tr {
-            th { +"Accuracy" }
+            th { +"" }
             th { +"Abbreviation" }
             th { +"Full" }
           }
@@ -109,20 +113,26 @@ class Web(val service: Service) {
                 .filter { it.second == 0.0 }
                 .forEach { a ->
                   tr {
-                    td { +"0" }
-                    highlightedTableDivision(highlight, a.first.abbreviation)
-                    highlightedTableDivision(highlight, a.first.full)
+                    td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
+                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
                   }
                 }
-              tr { }
+              tr {
+                id = "split"
+                td {
+                  colSpan = "3"
+                  +"―― Fuzzy ――"
+                }
+              }
               it
                 .filter { it.second > 0 }
                 .sortedBy { it.second }
                 .forEach { a ->
                   tr {
-                    td { +a.second.toString() }
-                    highlightedTableDivision(highlight, a.first.abbreviation)
-                    highlightedTableDivision(highlight, a.first.full)
+                    td { a(href = "/web/edit.html?id=" + a.first.id) { +"Edit" } }
+                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
+                    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
                   }
                 }
             }
@@ -164,7 +174,7 @@ class Web(val service: Service) {
       body {
         container {
           form {
-            attributes["hx-post"] = "/index.html"
+            attributes["hx-post"] = "/web/add.html"
             textInput("Abbreviation", "abbreviation")
             br {}
             textInput("Full", "full")
@@ -179,21 +189,64 @@ class Web(val service: Service) {
     }
   }
 
-  private fun FORM.textInput(label: String, forWhat: String) {
-    label {
-      attributes["for"] = forWhat
-      +label
-    }
-    br { }
-    input(type = InputType.text) {
-      attributes["id"] = forWhat
-      attributes["name"] = forWhat
+  private fun FORM.textInput(label: String, forWhat: String, value: String? = null) {
+    div(classes = "form-group") {
+      label {
+        attributes["for"] = forWhat
+        +label
+      }
+      br { }
+      input(type = InputType.text, classes = "form-control") {
+        attributes["id"] = forWhat
+        attributes["name"] = forWhat
+        value?.let { attributes["value"] = value }
+      }
     }
   }
 
   private fun BODY.container(block: DIV.() -> Unit = {}) {
     div(classes = "container") {
       block(this)
+    }
+  }
+
+  fun edit(id: String): String {
+    val element = service.byId(id)
+
+    return createHTML(true).html {
+      headers()
+      body {
+        container {
+          element.fold(
+            {
+              p {
+                +"Nothing to edit"
+              }
+              input(type = InputType.button) {
+                attributes["onclick"] = "window.location.href = '/index.html';"
+              }
+            },
+            {
+              form {
+                attributes["hx-post"] = "/web/edit.html"
+                textInput("Abbreviation", "abbreviation", it.mostRecent().abbreviation.short)
+                br {}
+                textInput("Full", "full", it.mostRecent().abbreviation.full)
+                br {}
+                br {}
+                input(type = InputType.hidden) {
+                  attributes["id"] = id
+                  attributes["name"] = id
+                  attributes["value"] = id
+                }
+                input(type = InputType.submit) {
+                  attributes["onclick"] = "window.location.href = '/index.html';"
+                }
+              }
+            }
+          )
+        }
+      }
     }
   }
 }
