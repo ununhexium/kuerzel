@@ -9,8 +9,14 @@ import java.io.StringWriter
 
 class Service(private val store: JsonStore) {
 
-  fun add(short: String, full: String): Right<AbbreviationHistory> {
-    return Right(store.add(short, full))
+  fun add(
+    short: String,
+    full: String,
+    link: String,
+    description: String,
+    tag: List<String>,
+  ): Right<AbbreviationHistory> {
+    return Right(store.add(short, full, link, description, tag))
   }
 
   fun all(): Either<String, List<AbbreviationHistory>> {
@@ -25,8 +31,15 @@ class Service(private val store: JsonStore) {
     return store.byId(id)?.let { Right(it) } ?: Left(Unit)
   }
 
-  fun update(id: String, abbreviation: String, full: String): Either<Unit, Unit> {
-    return Right(store.update(id, abbreviation, full))
+  fun update(
+    id: String,
+    short: String,
+    full: String,
+    link: String,
+    description: String,
+    tag: List<String>,
+  ): Either<Unit, Unit> {
+    return Right(store.update(id, short, full, link, description, tag))
   }
 
   fun allCsv(): Right<String> {

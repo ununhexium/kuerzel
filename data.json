@@ -1,6 +1,42 @@
 {
   "list": [
     {
+      "id": "17e70820-9fe4-4528-960c-49ab79924e18",
+      "revisions": [
+        {
+          "date": "2024-02-20T20:24:10.719220334",
+          "abbreviation": {
+            "short": "QED",
+            "full": "quod erat demonstrandum",
+            "link": "https://en.wiktionary.org/wiki/Q._E._D.#Latin",
+            "description": "Also written as a square."
+          }
+        },
+        {
+          "date": "2024-02-20T20:26:16.28947639",
+          "abbreviation": {
+            "short": "QED",
+            "full": "quod erat demonstrandum",
+            "link": "https://en.wiktionary.org/wiki/Q._E._D.#Latin",
+            "description": "Also written as a square."
+          }
+        },
+        {
+          "date": "2024-02-20T20:30:15.477008715",
+          "abbreviation": {
+            "short": "QED",
+            "full": "quod erat demonstrandum",
+            "link": "https://en.wiktionary.org/wiki/Q._E._D.#Latin",
+            "description": "Also written as a square.",
+            "tags": [
+              "latin",
+              "math"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "3d1a62a3-6dee-4b15-b437-5e233b206f85",
       "revisions": [
         {

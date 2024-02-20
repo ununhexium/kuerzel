@@ -1,5 +1,6 @@
 package dev.c15u.kuerzel
 
+import arrow.core.toOption
 import org.http4k.core.Body
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -7,6 +8,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.body.form
+import org.http4k.core.body.toBody
 import org.http4k.core.with
 import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.Query
@@ -24,7 +26,7 @@ val routed = { service: Service ->
   routes(
     "/api/add" bind POST to {
       val a = Abbreviation.lens(it)
-      service.add(a.short, a.full)
+      service.add(a.short, a.full, a.link, a.description, a.tags)
         .fold(
           { Response(BAD_REQUEST) },
           { Response(OK).with(AbbreviationHistory.lens of it) }
@@ -53,9 +55,13 @@ val routed = { service: Service ->
       Response(OK).body(web.index())
     },
     "/web/add" bind POST to {
-      val abbreviation = it.form("short") ?: ""
+      Abbreviation.lens(it)
+      val short = it.form("short") ?: ""
       val full = it.form("full") ?: ""
-      service.add(abbreviation, full)
+      val link = it.form("link") ?: ""
+      val description = it.form("description") ?: ""
+      val tag = it.form("tags")?.split(",") ?: listOf()
+      service.add(short, full, link, description, tag)
         .fold({ Response(BAD_REQUEST) }, { Response(OK).with(AbbreviationHistory.lens of it) })
       Response(OK).body(web.index())
     },
@@ -70,22 +76,17 @@ val routed = { service: Service ->
       )
     },
     "/web/edit" bind POST to {
-      service.update(
-        it.form("id") ?: "",
-        it.form("short") ?: "",
-        it.form("full") ?: "",
-      ).fold(
-        {
-          Response(OK).body(
-            ""
-          )
-        },
-        {
-          Response(OK).body(
-            ""
-          )
-        }
-      )
+      val id = it.form("id") ?: ""
+      val short = it.form("short") ?: ""
+      val full = it.form("full") ?: ""
+      val link = it.form("link") ?: ""
+      val description = it.form("description") ?: ""
+      val tag = it.form("tags")?.split(",") ?: listOf()
+      service.update(id, short, full, link, description, tag)
+        .fold(
+          { Response(OK).body("") },
+          { Response(OK).body("") },
+        )
     },
     "/web/filter" bind GET to {
       Response(OK).body(

@@ -4,6 +4,8 @@ import arrow.core.getOrElse
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
+import java.net.MalformedURLException
+import java.net.URL
 
 class Web(val service: Service) {
   fun index(): String {
@@ -119,23 +121,24 @@ class Web(val service: Service) {
         table(classes = "table") {
           tr {
             th { +"" }
-            th { +"Abbreviation" }
+            th { +"Short" }
             th { +"Full" }
+            th { +"Link" }
+            th { +"Description" }
+            th { +"Tags" }
           }
 
           results
             .filter { it.second == 0.0 }
             .forEach { a ->
               tr {
-                td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
-                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
-                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
+                resultLine(a, highlight)
               }
             }
           tr {
             id = "split"
             td {
-              colSpan = "3"
+              colSpan = "6"
               +"―― Fuzzy ――"
             }
           }
@@ -145,9 +148,7 @@ class Web(val service: Service) {
             .forEach { a ->
               tr {
                 style = "opacity: ${100.0 * (1.0 - (0.7 * a.second / Config.MAX_DIFFERENCE))}%"
-                td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
-                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
-                highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
+                resultLine(a, highlight)
               }
             }
         }
@@ -155,10 +156,27 @@ class Web(val service: Service) {
     }
   }
 
+  private fun TR.resultLine(
+    a: Pair<AbbreviationHistory, Double>,
+    highlight: String?
+  ) {
+    td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.link)
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.description)
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.tags.joinToString(", "))
+  }
+
   private fun TR.highlightedTableDivision(highlight: String?, cellContent: String) {
     td {
-      if (highlight != null) {
-        for (s in extract(cellContent, highlight)) {
+      val box = try {
+        URL(cellContent)
+        a(href = cellContent) {
+          +cellContent
+        }
+      } catch (e: MalformedURLException) {
+        for (s in extract(cellContent, highlight ?: "\uD83C\uDFE2")) {
           if (s.equals(highlight, ignoreCase = true)) {
             span(classes = "highlight") {
               +s
@@ -167,8 +185,6 @@ class Web(val service: Service) {
             +s
           }
         }
-      } else {
-        +cellContent
       }
     }
   }
@@ -190,11 +206,7 @@ class Web(val service: Service) {
           container {
             form {
               attributes["hx-post"] = "/web/add"
-              textInput("Abbreviation", "short")
-              br {}
-              textInput("Full", "full")
-              br {}
-              br {}
+              abbreviationEditFormContent(Abbreviation("", ""))
               input(type = InputType.submit) {
                 attributes["onclick"] = "window.location.href = '/index.html';"
               }
@@ -203,6 +215,19 @@ class Web(val service: Service) {
         }
       }
     }
+  }
+
+  private fun FORM.abbreviationEditFormContent(abbreviation: Abbreviation) {
+    textInput("Abbreviation", "short", abbreviation.short)
+    br {}
+    textInput("Full", "full", abbreviation.full)
+    br {}
+    textInput("Link", "link", abbreviation.link)
+    br {}
+    textInput("Description", "description", abbreviation.description)
+    br {}
+    textInput("Tags", "tags", abbreviation.tags.joinToString(","))
+    br {}
   }
 
   private fun FORM.textInput(label: String, forWhat: String, value: String? = null) {
@@ -254,10 +279,7 @@ class Web(val service: Service) {
                 div(classes = "container") {
                   form {
                     attributes["hx-post"] = "/web/edit"
-                    textInput("Abbreviation", "short", h.mostRecent().abbreviation.short)
-                    br {}
-                    textInput("Full", "full", h.mostRecent().abbreviation.full)
-                    br {}
+                    abbreviationEditFormContent(h.mostRecent().abbreviation)
                     br {}
                     input(type = InputType.hidden) {
                       attributes["id"] = id

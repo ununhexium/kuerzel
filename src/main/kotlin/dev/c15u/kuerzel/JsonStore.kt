@@ -44,8 +44,8 @@ class JsonStore(val location: Path) : Store {
   override fun search(query: String): List<Pair<AbbreviationHistory, Double>> {
     val exact = data.filter {
       val a = it.mostRecent().abbreviation
-      a.short.contains(query, ignoreCase = true) ||
-          a.full.contains(query, ignoreCase = true)
+      val fields = listOf(a.short, a.full, a.link, a.description) + a.tags
+      fields.any { it.contains(query, ignoreCase = true) }
     }
 
     val byDistance = data
@@ -60,21 +60,38 @@ class JsonStore(val location: Path) : Store {
     return exact.map { it to 0.0 } + byDistance
   }
 
-  override fun update(id: String, short: String, full: String) {
+  override fun update(
+    id: String,
+    short: String,
+    full: String,
+    link: String,
+    description: String,
+    tag: List<String>
+  ) {
     val index = data.indexOfFirst { it.id == id }
     val byIndex = data.removeAt(index)
     val new = byIndex.copy(
-      revisions = byIndex.revisions + listOf(Revision.now(Abbreviation(short, full)))
+      revisions = byIndex.revisions + listOf(
+        Revision.now(
+          Abbreviation(short, full, link, description, tag)
+        )
+      )
     )
     data.add(0, new)
     save()
   }
 
-  override fun add(short: String, full: String): AbbreviationHistory {
+  override fun add(
+    short: String,
+    full: String,
+    link: String,
+    description: String,
+    tag: List<String>
+  ): AbbreviationHistory {
     val element = AbbreviationHistory(
       id = UUID.randomUUID().toString(),
       listOf(
-        Revision.now(Abbreviation(short, full))
+        Revision.now(Abbreviation(short, full, link, description, tag))
       )
     )
 
