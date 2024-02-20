@@ -42,21 +42,17 @@ class JsonStore(val location: Path) : Store {
   }
 
   override fun search(query: String): List<Pair<AbbreviationHistory, Double>> {
-    val exact = data.filter {
-      val a = it.mostRecent().abbreviation
-      val fields = listOf(a.short, a.full, a.link, a.description) + a.tags
-      fields.any { it.contains(query, ignoreCase = true) }
-    }
-
     val byDistance = data
       .asSequence()
-      .filter { it !in exact }
-      .map { it to myDistance2(it.mostRecent().abbreviation.short, query) }
-      .filter { it.second < Config.MAX_DIFFERENCE }
+      .map {
+        val a = it.mostRecent().abbreviation
+        val fields = listOf(a.short, a.full, a.description) + a.tags
+        it to (fields.map { f -> myDistance2(f, query) }.filterNot { it.isNaN() }.minOrNull() ?: 2.0)
+      }
       .sortedBy { it.second }
       .toList()
 
-    return exact.map { it to 0.0 } + byDistance
+    return byDistance
   }
 
   override fun update(

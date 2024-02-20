@@ -103,4 +103,36 @@ class LibKtTest {
       0.01
     )
   }
+
+  @Test
+  fun `Condition - cnod`() {
+    assertThat(
+      myDistance2("Condition", "cnod")
+    ).isCloseTo(
+      0.5,
+      0.01
+    )
+  }
+
+  @Test
+  fun `quod erat demonstrandum - a`() {
+    assertThat(
+      myDistance2("quod erat demonstrandum", "a")
+    ).isCloseTo(
+      0.0,
+      0.01
+    )
+  }
+
+  @Test
+  fun `distance to an empty string`() {
+    assertThat(
+      myDistance2("a", "")
+    ).isCloseTo(
+      Double.NaN,
+      0.01
+    )
+  }
+
+
 }

@@ -130,7 +130,7 @@ class Web(val service: Service) {
           }
 
           results
-            .filter { it.second == 0.0 }
+            .filter { it.second < 0.1 }
             .forEach { a ->
               tr {
                 resultLine(a, highlight)
@@ -144,11 +144,11 @@ class Web(val service: Service) {
             }
           }
           results
-            .filter { it.second > 0 }
+            .filter { it.second >= 0.1 }
             .sortedBy { it.second }
             .forEach { a ->
               tr {
-                style = "opacity: ${100.0 * (1.0 - (0.7 * a.second / Config.MAX_DIFFERENCE))}%"
+                style = "opacity: ${150.0 - 50.0 * a.second}%"
                 resultLine(a, highlight)
               }
             }
