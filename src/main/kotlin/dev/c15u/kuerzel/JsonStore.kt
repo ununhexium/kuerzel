@@ -51,10 +51,9 @@ class JsonStore(val location: Path) : Store {
     val byDistance = data
       .asSequence()
       .filter { it !in exact }
-      .map { it to myDistance(it.mostRecent().abbreviation.short, query) }
+      .map { it to myDistance2(it.mostRecent().abbreviation.short, query) }
       .filter { it.second < Config.MAX_DIFFERENCE }
       .sortedBy { it.second }
-      .map { it.first to it.second.toDouble() }
       .toList()
 
     return exact.map { it to 0.0 } + byDistance

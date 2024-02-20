@@ -48,11 +48,12 @@ class Service(private val store: JsonStore) {
     val sw = StringWriter()
 
     CSVWriter(sw).use { writer ->
-      writer.writeNext(arrayOf("short", "full"))
+      writer.writeNext(arrayOf("short", "full", "link", "description", "tags"))
 
       all.forEach {
+        val a = it.mostRecent().abbreviation
         writer.writeNext(
-          arrayOf(it.mostRecent().abbreviation.short, it.mostRecent().abbreviation.full)
+          arrayOf(a.short, a.full, a.link, a.description) + a.tags
         )
       }
     }

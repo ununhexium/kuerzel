@@ -126,6 +126,7 @@ class Web(val service: Service) {
             th { +"Link" }
             th { +"Description" }
             th { +"Tags" }
+            th { +"Distance" }
           }
 
           results
@@ -166,6 +167,7 @@ class Web(val service: Service) {
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.link)
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.description)
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.tags.joinToString(", "))
+    td { +a.second.toString().take(3) }
   }
 
   private fun TR.highlightedTableDivision(highlight: String?, cellContent: String) {
