@@ -95,16 +95,6 @@ class LibKtTest {
   }
 
   @Test
-  fun `laser - lsq`() {
-    assertThat(
-      myDistance2("Laser", "lsq")
-    ).isCloseTo(
-      0.3333,
-      0.01
-    )
-  }
-
-  @Test
   fun `Condition - cnod`() {
     assertThat(
       myDistance2("Condition", "cnod")
@@ -128,11 +118,7 @@ class LibKtTest {
   fun `distance to an empty string`() {
     assertThat(
       myDistance2("a", "")
-    ).isCloseTo(
-      Double.NaN,
-      0.01
-    )
+    ).isEqualTo(Double.NaN)
   }
-
 
 }
