@@ -8,7 +8,7 @@ import java.net.MalformedURLException
 import java.net.URL
 
 class Web(val service: Service) {
-  fun index(): String {
+  fun index(query: String): String {
     return createHTML(true).html {
 
       headers()
@@ -29,6 +29,7 @@ class Web(val service: Service) {
                 attributes["hx-trigger"] = "keyup changed"
                 attributes["hx-target"] = "#search-results"
                 attributes["autofocus"] = ""
+                attributes["value"] = query
               }
             }
 
@@ -47,9 +48,13 @@ class Web(val service: Service) {
             }
           }
 
-          resultsTable(service.all().map { it.map { it to 1.0 } }.getOrElse {
-            throw RuntimeException(it)
-          })
+          if (query.isNotEmpty()) {
+            resultsTable(service.search(query).getOrElse { listOf() }, query)
+          } else {
+            resultsTable(service.all().map { it.map { it to 1.0 } }.getOrElse {
+              throw RuntimeException(it)
+            })
+          }
         }
       }
     }.toString()

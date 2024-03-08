@@ -50,7 +50,8 @@ val routed = { service: Service ->
       )
     },
     "/index.html" bind GET to {
-      Response(OK).body(web.index())
+      val query = it.query("q") ?: ""
+      Response(OK).body(web.index(query))
     },
     "/web/add" bind POST to {
       val short = it.form("short") ?: ""
@@ -60,7 +61,7 @@ val routed = { service: Service ->
       val tag = it.form("tags")?.split(",") ?: listOf()
       service.add(short, full, link, description, tag)
         .fold({ Response(BAD_REQUEST) }, { Response(OK).with(AbbreviationHistory.lens of it) })
-      Response(OK).body(web.index())
+      Response(OK).body(web.index(short))
     },
     "/web/add.html" bind GET to {
       Response(OK).body(
