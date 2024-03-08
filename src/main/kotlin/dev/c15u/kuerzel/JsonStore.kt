@@ -2,6 +2,7 @@ package dev.c15u.kuerzel
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.File
 import java.nio.file.Path
 import java.util.*
 
@@ -24,20 +25,30 @@ class JsonStore(val location: Path) : Store {
   }
 
   override fun load(): MutableList<AbbreviationHistory> {
-    return if (location.toFile().exists()) {
-      Json.decodeFromString<Abbreviations>(location.toFile().readText()).list.toMutableList()
+    val file = location.toFile()
+    ensureDirectoryExists(file)
+    if (!file.exists() || file.readText().isEmpty()) {
+      return mutableListOf()
     } else {
-      mutableListOf()
+      return Json.decodeFromString<Abbreviations>(file.readText()).list.toMutableList()
     }
   }
 
   fun save() {
     synchronized(this) {
-      location.toFile().writer(Charsets.UTF_8).use {
+      val file = location.toFile()
+      ensureDirectoryExists(file)
+      file.writer(Charsets.UTF_8).use {
         it.write(
           json.encodeToString(Abbreviations(data))
         )
       }
+    }
+  }
+
+  private fun ensureDirectoryExists(file: File) {
+    if (!file.parentFile.exists()) {
+      file.parentFile.mkdirs()
     }
   }
 
@@ -47,7 +58,8 @@ class JsonStore(val location: Path) : Store {
       .map {
         val a = it.mostRecent().abbreviation
         val fields = listOf(a.short, a.full, a.description) + a.tags
-        it to (fields.map { f -> myDistance2(f, query) }.filterNot { it.isNaN() }.minOrNull() ?: 2.0)
+        it to (fields.map { f -> myDistance2(f, query) }.filterNot { it.isNaN() }.minOrNull()
+          ?: 2.0)
       }
       .sortedBy { it.second }
       .toList()
