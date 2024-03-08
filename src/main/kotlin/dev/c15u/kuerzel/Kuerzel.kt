@@ -1,6 +1,5 @@
 package dev.c15u.kuerzel
 
-import arrow.core.toOption
 import org.http4k.core.Body
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -8,7 +7,6 @@ import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.body.form
-import org.http4k.core.body.toBody
 import org.http4k.core.with
 import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.Query
@@ -55,7 +53,6 @@ val routed = { service: Service ->
       Response(OK).body(web.index())
     },
     "/web/add" bind POST to {
-      Abbreviation.lens(it)
       val short = it.form("short") ?: ""
       val full = it.form("full") ?: ""
       val link = it.form("link") ?: ""
@@ -97,5 +94,6 @@ val routed = { service: Service ->
 }
 
 fun main() {
-  routed(Service(JsonStore(Paths.get("./data.json")))).asServer(Undertow(9000)).start()
+  val location = Paths.get(System.getenv("KUERZEL_STORAGE") ?: "./data.json")
+  routed(Service(JsonStore(location))).asServer(Undertow(9000)).start()
 }
