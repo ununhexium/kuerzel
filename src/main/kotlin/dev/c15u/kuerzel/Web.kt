@@ -33,7 +33,7 @@ class Web(val service: Service) {
               }
             }
 
-            div(classes = "container") {
+            container {
               id = "add"
               a(href = "/web/add.html") {
                 i(classes = "fa fa-plus-circle")
@@ -209,7 +209,7 @@ class Web(val service: Service) {
       headers()
       body {
         container {
-          h2 { +"Add" }
+          h1("p-3") { +"Add abbreviation" }
           container {
             form {
               attributes["hx-post"] = "/web/add"
@@ -225,19 +225,33 @@ class Web(val service: Service) {
   }
 
   private fun FORM.abbreviationEditFormContent(abbreviation: Abbreviation) {
-    textInput("Abbreviation", "short", abbreviation.short)
-    br {}
-    textInput("Full", "full", abbreviation.full)
-    br {}
-    textInput("Link", "link", abbreviation.link)
-    br {}
-    textInput("Description", "description", abbreviation.description)
-    br {}
-    textInput("Tags", "tags", abbreviation.tags.joinToString(","))
-    br {}
+    container {
+      h2("p-2") {
+        +"Mandatory"
+      }
+      div {
+
+        textInput("Abbreviation", "short", abbreviation.short)
+        br {}
+        textInput("Full", "full", abbreviation.full)
+      }
+
+      h2(classes = "p-2 pt-3") {
+        +"Optional"
+      }
+      div {
+
+        textInput("Link", "link", abbreviation.link)
+        br {}
+        textInput("Description", "description", abbreviation.description)
+        br {}
+        textInput("Tags", "tags", abbreviation.tags.joinToString(","))
+        br {}
+      }
+    }
   }
 
-  private fun FORM.textInput(label: String, forWhat: String, value: String? = null) {
+  private fun DIV.textInput(label: String, forWhat: String, value: String? = null) {
     div(classes = "form-group") {
       label {
         attributes["for"] = forWhat
@@ -252,8 +266,8 @@ class Web(val service: Service) {
     }
   }
 
-  private fun BODY.container(block: DIV.() -> Unit = {}) =
-    div(classes = "container") {
+  private fun BODY.container(classes: String, block: DIV.() -> Unit = {}) =
+    div(classes = "container $classes") {
       block(this)
     }
 
