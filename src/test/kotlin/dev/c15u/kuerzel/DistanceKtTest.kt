@@ -6,7 +6,7 @@ import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class LibKtTest {
+class DistanceKtTest {
   @Test
   fun `sql SQL 0`() {
     val distance = myDistance("sql", "SQL")

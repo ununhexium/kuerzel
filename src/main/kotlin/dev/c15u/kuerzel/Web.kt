@@ -1,6 +1,8 @@
 package dev.c15u.kuerzel
 
 import arrow.core.getOrElse
+import dev.c15u.kuerzel.persistence.Abbreviation
+import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
@@ -169,8 +171,8 @@ class Web(val service: Service) {
     td { a(href = "/web/edit.html?id=" + a.first.id) { i(classes = "fa fa-edit") } }
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.short)
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.full)
-    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.link)
-    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.description)
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.link ?: "")
+    highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.description ?: "")
     highlightedTableDivision(highlight, a.first.mostRecent().abbreviation.tags.joinToString(", "))
     td { +a.second.toString().take(3) }
   }

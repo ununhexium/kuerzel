@@ -1,5 +1,6 @@
-package dev.c15u.kuerzel
+package dev.c15u.kuerzel.persistence
 
+import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import kotlinx.serialization.Serializable
 
 @Serializable

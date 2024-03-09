@@ -1,4 +1,4 @@
-package dev.c15u.kuerzel
+package dev.c15u.kuerzel.persistence
 
 import kotlinx.serialization.Serializable
 import org.http4k.core.Body
@@ -8,16 +8,7 @@ import java.time.format.DateTimeFormatter
 
 @Serializable
 data class Revision(
+  // TODO: change the way this is serialized. Too many decimals
   val date: String,
   val abbreviation: Abbreviation
-) {
-  companion object {
-    val lens = Body.auto<Revision>().toLens()
-
-    fun now(abbreviation: Abbreviation) =
-      Revision(
-        DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now()),
-        abbreviation
-      )
-  }
-}
+)

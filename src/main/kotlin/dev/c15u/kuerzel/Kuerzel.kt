@@ -1,5 +1,7 @@
 package dev.c15u.kuerzel
 
+import dev.c15u.kuerzel.api.Api
+import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import org.http4k.core.Body
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -22,14 +24,15 @@ val routed = { service: Service ->
 
   // TODO: get as CSV
   routes(
-    "/api/add" bind POST to {
-      val a = Abbreviation.lens(it)
-      service.add(a.short, a.full, a.link, a.description, a.tags)
-        .fold(
-          { Response(BAD_REQUEST) },
-          { Response(OK).with(AbbreviationHistory.lens of it) }
-        )
-    },
+    Api(service),
+//    "/api/add" bind POST to {
+//      val a = Abbreviation.lens(it)
+//      service.add(a.short, a.full, a.link, a.description, a.tags)
+//        .fold(
+//          { Response(BAD_REQUEST) },
+//          { Response(OK).with(AbbreviationHistory.lens of it) }
+//        )
+//    },
     "/api/all" bind GET to {
       service.all().fold({ Response(BAD_REQUEST).body(it) },
         {
@@ -96,5 +99,5 @@ val routed = { service: Service ->
 
 fun main() {
   val location = Paths.get(System.getenv("KUERZEL_STORAGE") ?: "./data.json")
-  routed(Service(JsonStore(location))).asServer(Undertow(9000)).start()
+  routed(ServiceImpl(JsonStore(location))).asServer(Undertow(9000)).start()
 }

@@ -1,12 +1,23 @@
 package dev.c15u.kuerzel
 
+import dev.c15u.kuerzel.persistence.Abbreviation
+import dev.c15u.kuerzel.persistence.AbbreviationHistory
+import dev.c15u.kuerzel.persistence.Abbreviations
+import dev.c15u.kuerzel.persistence.Revision
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Path
+import java.time.Clock
+import java.time.LocalDateTime
 import java.util.*
 
-class JsonStore(val location: Path) : Store {
+
+class JsonStore(
+  private val location: Path,
+  private val clock: Clock = Clock.systemUTC(),
+  private val uuidGenerator: () -> UUID = { UUID.randomUUID() },
+) : Store {
 
   companion object {
     val json = Json {
@@ -24,7 +35,7 @@ class JsonStore(val location: Path) : Store {
     return data.firstOrNull { it.id == id }
   }
 
-  override fun load(): MutableList<AbbreviationHistory> {
+  fun load(): MutableList<AbbreviationHistory> {
     val file = location.toFile()
     ensureDirectoryExists(file)
     if (!file.exists() || file.readText().isEmpty()) {
@@ -58,7 +69,8 @@ class JsonStore(val location: Path) : Store {
       .map {
         val a = it.mostRecent().abbreviation
         val fields = listOf(a.short, a.full, a.description) + a.tags
-        it to (fields.map { f -> myDistance2(f, query) }.filterNot { it.isNaN() }.minOrNull()
+        it to (fields.mapNotNull { it }.map { f -> myDistance2(f, query) }.filterNot { it.isNaN() }
+          .minOrNull()
           ?: 2.0)
       }
       .sortedBy { it.second }
@@ -79,7 +91,8 @@ class JsonStore(val location: Path) : Store {
     val byIndex = data.removeAt(index)
     val new = byIndex.copy(
       revisions = byIndex.revisions + listOf(
-        Revision.now(
+        Revision(
+          LocalDateTime.now(clock).toString(),
           Abbreviation(short, full, link, description, tag)
         )
       )
@@ -91,14 +104,17 @@ class JsonStore(val location: Path) : Store {
   override fun add(
     short: String,
     full: String,
-    link: String,
-    description: String,
+    link: String?,
+    description: String?,
     tag: List<String>
   ): AbbreviationHistory {
     val element = AbbreviationHistory(
-      id = UUID.randomUUID().toString(),
-      listOf(
-        Revision.now(Abbreviation(short, full, link, description, tag))
+      id = uuidGenerator().toString(),
+      revisions = listOf(
+        Revision(
+          LocalDateTime.now(clock).toString(),
+          Abbreviation(short, full, link, description, tag),
+        )
       )
     )
 
@@ -108,4 +124,13 @@ class JsonStore(val location: Path) : Store {
 
     return element
   }
+
+  override fun add2(
+    short: String,
+    full: String,
+    link: String?,
+    description: String?,
+    tag: List<String>
+  ): Result<AbbreviationHistory> =
+    Result.success(add(short, full, link, description, tag))
 }

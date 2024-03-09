@@ -1,4 +1,4 @@
-package dev.c15u.kuerzel
+package dev.c15u.kuerzel.persistence
 
 import kotlinx.serialization.Serializable
 import org.http4k.core.Body

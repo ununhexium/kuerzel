@@ -1,5 +1,6 @@
 package dev.c15u.kuerzel
 
+import dev.c15u.kuerzel.persistence.Abbreviation
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
@@ -9,7 +10,8 @@ class JsonStoreTest {
   @Test
   fun `can load an empty file`() {
     val tmp = Files.createTempFile(null, null)
-    JsonStore(tmp).load()
+    val s = JsonStore(tmp)
+    s.load()
   }
 
   @Test
@@ -31,7 +33,6 @@ class JsonStoreTest {
       listOf("tag1", "tag2"),
     )
 
-    s.save()
     val result1 = s.byId(abbr.id)
     result1?.mostRecent()?.abbreviation shouldBe Abbreviation(
       "short",
@@ -59,5 +60,5 @@ class JsonStoreTest {
       listOf("tag1+", "tag2+"),
     )
   }
-  
+
 }
