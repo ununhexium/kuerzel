@@ -1,8 +1,10 @@
 package dev.c15u.kuerzel
 
 import arrow.core.Either
+import dev.c15u.kuerzel.persistence.Abbreviation
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 
+// TODO: split model/storage?
 interface Service {
   fun add(
     short: String,
@@ -21,6 +23,8 @@ interface Service {
   ): Result<AbbreviationHistory>
 
   fun all(): Either<String, List<AbbreviationHistory>>
+
+  fun all2(): Result<List<AbbreviationHistory>>
 
   fun search(query: String): Either.Right<List<Pair<AbbreviationHistory, Double>>>
 

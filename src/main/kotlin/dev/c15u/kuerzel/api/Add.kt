@@ -1,7 +1,7 @@
 package dev.c15u.kuerzel.api
 
 import dev.c15u.kuerzel.Service
-import dev.c15u.kuerzel.api.dto.CreatedAbbreviation
+import dev.c15u.kuerzel.api.dto.Abbreviation
 import dev.c15u.kuerzel.api.dto.ErrorMessage
 import dev.c15u.kuerzel.api.dto.NewAbbreviation
 import org.http4k.contract.ContractRoute
@@ -31,7 +31,7 @@ object AddExample {
       )
 
     val response = Response(OK).with(
-      CreatedAbbreviation.lens of CreatedAbbreviation(
+      Abbreviation.lens of Abbreviation(
         id = "01234567-0123-0123-0123-0123456789ab",
         short = "LASER",
         full = "Light Amplification by Stimulated Emission of Radiation",
@@ -53,7 +53,7 @@ fun Add(service: Service): ContractRoute {
         { history ->
           val createdAbbr = history.mostRecent().abbreviation
           Response(OK).with(
-            Body.auto<CreatedAbbreviation>().toLens() of CreatedAbbreviation(
+            Body.auto<Abbreviation>().toLens() of Abbreviation(
               history.id,
               createdAbbr.short,
               createdAbbr.full,
@@ -84,7 +84,7 @@ fun Add(service: Service): ContractRoute {
     receiving(
       HttpMessageMeta(
         AddExample.Ok.request,
-        "Add a new abbreviation for Lasers.",
+        "Add a new abbreviation.",
         "add",
         null,
       )

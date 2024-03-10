@@ -34,6 +34,10 @@ class ServiceImpl(private val store: Store) : Service {
     return Right(store.all())
   }
 
+  override fun all2(): Result<List<AbbreviationHistory>> {
+    return Result.success(store.all())
+  }
+
   override fun search(query: String): Right<List<Pair<AbbreviationHistory, Double>>> {
     return Right(store.search(query))
   }

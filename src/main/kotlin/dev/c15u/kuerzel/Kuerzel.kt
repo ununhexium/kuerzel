@@ -24,22 +24,7 @@ val routed = { service: Service ->
 
   // TODO: get as CSV
   routes(
-    Api(service),
-//    "/api/add" bind POST to {
-//      val a = Abbreviation.lens(it)
-//      service.add(a.short, a.full, a.link, a.description, a.tags)
-//        .fold(
-//          { Response(BAD_REQUEST) },
-//          { Response(OK).with(AbbreviationHistory.lens of it) }
-//        )
-//    },
-    "/api/all" bind GET to {
-      service.all().fold({ Response(BAD_REQUEST).body(it) },
-        {
-          Response(OK).with(
-            Body.auto<List<AbbreviationHistory>>().toLens() of it.map { it })
-        })
-    },
+    "/api" bind Api(service),
     "/api/all.csv" bind GET to {
       service.allCsv().fold(
         { Response(BAD_REQUEST) },
