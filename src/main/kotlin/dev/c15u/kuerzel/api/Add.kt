@@ -19,7 +19,7 @@ object AddExample {
     val request =
       Request(
         POST,
-        "/api/add"
+        "/api/abbreviations"
       ).with(
         NewAbbreviation.lens of NewAbbreviation(
           short = "LASER",
@@ -71,7 +71,7 @@ fun Add(service: Service): ContractRoute {
       )
     }
 
-  val spec = "/api/add" meta {
+  val spec = "/abbreviations" meta {
     summary = "Add a new abbreviation"
     description = """
         |Adds a new abbreviation to the list.

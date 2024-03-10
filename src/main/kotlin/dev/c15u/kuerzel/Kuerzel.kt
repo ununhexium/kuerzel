@@ -1,16 +1,22 @@
 package dev.c15u.kuerzel
 
-import dev.c15u.kuerzel.api.Api
+import dev.c15u.kuerzel.api.Add
+import dev.c15u.kuerzel.api.All
+import dev.c15u.kuerzel.api.mySecurity
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
-import org.http4k.core.Body
+import org.http4k.contract.contract
+import org.http4k.contract.openapi.ApiInfo
+import org.http4k.contract.openapi.v3.ApiServer
+import org.http4k.contract.openapi.v3.OpenApi3
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.Uri
 import org.http4k.core.body.form
 import org.http4k.core.with
-import org.http4k.format.KotlinxSerialization.auto
+import org.http4k.format.Argo
 import org.http4k.lens.Query
 import org.http4k.lens.string
 import org.http4k.routing.bind
@@ -24,7 +30,19 @@ val routed = { service: Service ->
 
   // TODO: get as CSV
   routes(
-    "/api" bind Api(service),
+    "/api" bind contract {
+      renderer = OpenApi3(
+        ApiInfo("Kürzel", "0.1"),
+        Argo,
+        servers = listOf(ApiServer(Uri.of("http://localhost:8000"), "the greatest server"))
+      )
+      descriptionPath = "/openapi.json"
+      // TODO: security
+//      security = mySecurity
+
+      routes += Add(service)
+      routes += All(service)
+    },
     "/api/all.csv" bind GET to {
       service.allCsv().fold(
         { Response(BAD_REQUEST) },

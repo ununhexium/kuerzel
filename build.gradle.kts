@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
 
-  implementation("com.opencsv:opencsv:5.7.1")
+  implementation("com.opencsv:opencsv:5.9")
 
   implementation("com.willowtreeapps.assertk:assertk:0.28.0")
 
@@ -18,11 +18,12 @@ dependencies {
 
   implementation("io.mockk:mockk:1.13.10")
 
-  implementation(platform("org.http4k:http4k-bom:5.13.2.0"))
+  implementation(platform("org.http4k:http4k-bom:5.14.0.0"))
   implementation("org.http4k:http4k-contract")
   implementation("org.http4k:http4k-core")
   implementation("org.http4k:http4k-server-undertow")
   implementation("org.http4k:http4k-format-kotlinx-serialization")
+  implementation("org.http4k:http4k-format-argo")
   implementation("org.http4k:http4k-multipart")
 
   //Fill this in with the version of kotlinx in use in your project

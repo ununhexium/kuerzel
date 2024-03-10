@@ -119,7 +119,7 @@ fun All(service: Service): ContractRoute {
       )
     }
 
-  val spec = "/api/abbreviations" meta {
+  val spec = "/abbreviations" meta {
     summary = "List all the abbreviations"
     description = """
         |Lists all known abbreviations.
