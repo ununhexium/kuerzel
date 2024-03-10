@@ -8,10 +8,20 @@ import dev.c15u.kuerzel.api.dto.ErrorMessage
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import org.http4k.contract.ContractRoute
 import org.http4k.contract.HttpMessageMeta
+import org.http4k.contract.div
 import org.http4k.contract.meta
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.ContentType
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.with
 import org.http4k.format.KotlinxSerialization.auto
+import org.http4k.lens.Query
+import org.http4k.lens.string
 import java.io.StringWriter
 
 object AllExample {
@@ -47,9 +57,13 @@ object AllExample {
       .header("Content-Type", "application/json")
       .with(Abbreviations.lens of Abbreviations(allAbbreviations))
 
-    val request2 =
+    val request2a =
       Request(Method.GET, "/api/abbreviations")
         .header("Accept", "text/csv")
+
+    val request2b =
+      Request(Method.GET, "/api/abbreviations")
+        .query("format", "csv")
 
     val response2 =
       Response(OK)
@@ -102,13 +116,17 @@ fun All(service: Service): ContractRoute {
       .body(sw.toString())
   }
 
+  val formatQuery = Query.optional("format")
+
   fun handler(): HttpHandler =
     { req ->
       service.all2().fold(
         {
-          when (req.header("Accept")) {
-            "text/csv" -> foldAsCsv(it)
-            else -> foldAsJson(it)
+          if (req.header("Accept") == "text/csv" ||
+            formatQuery(req).equals("csv", ignoreCase = true)) {
+            foldAsCsv(it)
+          } else {
+            foldAsJson(it)
           }
         },
         {
@@ -126,6 +144,8 @@ fun All(service: Service): ContractRoute {
       """.trimMargin()
     produces += ContentType.APPLICATION_JSON
     operationId = "all"
+
+    queries += formatQuery
 
     receiving(
       HttpMessageMeta(

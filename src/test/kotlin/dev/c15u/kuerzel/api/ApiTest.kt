@@ -2,7 +2,6 @@ package dev.c15u.kuerzel.api
 
 import dev.c15u.kuerzel.*
 import dev.c15u.kuerzel.api.dto.Abbreviation
-import dev.c15u.kuerzel.api.dto.Abbreviations
 import dev.c15u.kuerzel.api.dto.ErrorMessage
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import dev.c15u.kuerzel.persistence.Revision
@@ -18,9 +17,48 @@ import java.nio.file.Files
 import java.util.*
 
 class ApiTest {
+
+  private fun mockServiceForAllEExample(): Service =
+    mockk<Service>().also {
+      every { it.all2() } returns
+          Result.success(
+            listOf(
+              AbbreviationHistory(
+                id = "01234567-0123-0123-0123-0123456789ab",
+                listOf(
+                  Revision(
+                    "2024-01-01T00:00:00",
+                    dev.c15u.kuerzel.persistence.Abbreviation(
+                      short = "LASER",
+                      full = "Light Amplification by Stimulated Emission of Radiation",
+                      link = "https://en.wikipedia.org/wiki/Laser",
+                      description = "A kind of remote control that works on cats",
+                      tags = listOf("toy", "pretty"),
+                    )
+                  )
+                )
+              ),
+              AbbreviationHistory(
+                id = "98765432-9876-9876-9876-9876543210fe",
+                listOf(
+                  Revision(
+                    "2024-01-01T00:00:00",
+                    dev.c15u.kuerzel.persistence.Abbreviation(
+                      short = "Pulsar",
+                      full = "Pulsating radio source",
+                      link = null,
+                      description = null,
+                      tags = listOf(),
+                    )
+                  )
+                )
+              )
+            )
+          )
+    }
+
   @Test
   fun `add abbreviations example`() {
-
     val service = ServiceImpl(
       JsonStore(
         Files.createTempFile(null, null),
@@ -36,7 +74,6 @@ class ApiTest {
 
   @Test
   fun `add abbreviations failure`() {
-
     val store = mockk<Store>()
     every {
       store.add2(
@@ -60,43 +97,7 @@ class ApiTest {
 
   @Test
   fun `all abbreviations as json example`() {
-
-    val service = mockk<Service>()
-    every { service.all2() } returns
-        Result.success(
-          listOf(
-            AbbreviationHistory(
-              id = "01234567-0123-0123-0123-0123456789ab",
-              listOf(
-                Revision(
-                  "2024-01-01T00:00:00",
-                  dev.c15u.kuerzel.persistence.Abbreviation(
-                    short = "LASER",
-                    full = "Light Amplification by Stimulated Emission of Radiation",
-                    link = "https://en.wikipedia.org/wiki/Laser",
-                    description = "A kind of remote control that works on cats",
-                    tags = listOf("toy", "pretty"),
-                  )
-                )
-              )
-            ),
-            AbbreviationHistory(
-              id = "98765432-9876-9876-9876-9876543210fe",
-              listOf(
-                Revision(
-                  "2024-01-01T00:00:00",
-                  dev.c15u.kuerzel.persistence.Abbreviation(
-                    short = "Pulsar",
-                    full = "Pulsating radio source",
-                    link = null,
-                    description = null,
-                    tags = listOf(),
-                  )
-                )
-              )
-            )
-          )
-        )
+    val service = mockServiceForAllEExample()
 
     val api = routed(service)
 
@@ -105,48 +106,22 @@ class ApiTest {
   }
 
   @Test
-  fun `all abbreviations as CSV example`() {
-
-    val service = mockk<Service>()
-    every { service.all2() } returns
-        Result.success(
-          listOf(
-            AbbreviationHistory(
-              id = "01234567-0123-0123-0123-0123456789ab",
-              listOf(
-                Revision(
-                  "2024-01-01T00:00:00",
-                  dev.c15u.kuerzel.persistence.Abbreviation(
-                    short = "LASER",
-                    full = "Light Amplification by Stimulated Emission of Radiation",
-                    link = "https://en.wikipedia.org/wiki/Laser",
-                    description = "A kind of remote control that works on cats",
-                    tags = listOf("toy", "pretty"),
-                  )
-                )
-              )
-            ),
-            AbbreviationHistory(
-              id = "98765432-9876-9876-9876-9876543210fe",
-              listOf(
-                Revision(
-                  "2024-01-01T00:00:00",
-                  dev.c15u.kuerzel.persistence.Abbreviation(
-                    short = "Pulsar",
-                    full = "Pulsating radio source",
-                    link = null,
-                    description = null,
-                    tags = listOf(),
-                  )
-                )
-              )
-            )
-          )
-        )
+  fun `all abbreviations as CSV via http header`() {
+    val service = mockServiceForAllEExample()
 
     val api = routed(service)
 
-    val res = api(AllExample.Ok.request2)
+    val res = api(AllExample.Ok.request2a)
+    res shouldBe AllExample.Ok.response2
+  }
+
+  @Test
+  fun `all abbreviations as CSV via query param`() {
+    val service = mockServiceForAllEExample()
+
+    val api = routed(service)
+
+    val res = api(AllExample.Ok.request2b)
     res shouldBe AllExample.Ok.response2
   }
 

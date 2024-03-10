@@ -44,7 +44,7 @@ class Web(val service: Service) {
 
             container {
               id = "csv-download"
-              a(href = "/api/all.csv") {
+              a(href = "/api/abbreviations?format=csv") {
                 i(classes = "fa fa-download")
               }
             }
