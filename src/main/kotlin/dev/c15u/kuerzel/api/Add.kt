@@ -4,12 +4,21 @@ import dev.c15u.kuerzel.Service
 import dev.c15u.kuerzel.api.dto.Abbreviation
 import dev.c15u.kuerzel.api.dto.ErrorMessage
 import dev.c15u.kuerzel.api.dto.NewAbbreviation
+import io.undertow.security.idm.Credential
 import org.http4k.contract.ContractRoute
 import org.http4k.contract.HttpMessageMeta
 import org.http4k.contract.meta
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.ContentType
+import org.http4k.core.Credentials
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.POST
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.with
+import org.http4k.filter.ClientFilters.CustomBasicAuth.withBasicAuth
 import org.http4k.format.KotlinxSerialization.auto
 
 object AddExample {
@@ -17,20 +26,20 @@ object AddExample {
   object Ok {
 
     val request =
-      Request(
-        POST,
-        "/api/abbreviations"
-      ).with(
-        NewAbbreviation.lens of NewAbbreviation(
-          short = "LASER",
-          full = "Light Amplification by Stimulated Emission of Radiation",
-          link = "https://en.wikipedia.org/wiki/Laser",
-          description = "A kind of remote control that works on cats",
-          tags = listOf("toy", "pretty")
+      Request(POST, "/api/abbreviations")
+        .withBasicAuth(defaultCredentials)
+        .with(
+          NewAbbreviation.lens of NewAbbreviation(
+            short = "LASER",
+            full = "Light Amplification by Stimulated Emission of Radiation",
+            link = "https://en.wikipedia.org/wiki/Laser",
+            description = "A kind of remote control that works on cats",
+            tags = listOf("toy", "pretty")
+          )
         )
-      )
 
-    val response = Response(OK).with(
+    val response = Response(OK)
+      .with(
       Abbreviation.lens of Abbreviation(
         id = "01234567-0123-0123-0123-0123456789ab",
         short = "LASER",

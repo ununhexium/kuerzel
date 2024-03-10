@@ -8,7 +8,6 @@ import dev.c15u.kuerzel.api.dto.ErrorMessage
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import org.http4k.contract.ContractRoute
 import org.http4k.contract.HttpMessageMeta
-import org.http4k.contract.div
 import org.http4k.contract.meta
 import org.http4k.core.Body
 import org.http4k.core.ContentType
@@ -19,9 +18,9 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.with
+import org.http4k.filter.ClientFilters.CustomBasicAuth.withBasicAuth
 import org.http4k.format.KotlinxSerialization.auto
 import org.http4k.lens.Query
-import org.http4k.lens.string
 import java.io.StringWriter
 
 object AllExample {
@@ -48,10 +47,9 @@ object AllExample {
     )
 
     val request =
-      Request(
-        Method.GET,
-        "/api/abbreviations"
-      ).header("Accept", "application/json")
+      Request(Method.GET, "/api/abbreviations")
+        .withBasicAuth(defaultCredentials)
+        .header("Accept", "application/json")
 
     val response = Response(OK)
       .header("Content-Type", "application/json")
@@ -59,10 +57,12 @@ object AllExample {
 
     val request2a =
       Request(Method.GET, "/api/abbreviations")
+        .withBasicAuth(defaultCredentials)
         .header("Accept", "text/csv")
 
     val request2b =
       Request(Method.GET, "/api/abbreviations")
+        .withBasicAuth(defaultCredentials)
         .query("format", "csv")
 
     val response2 =
@@ -123,7 +123,8 @@ fun All(service: Service): ContractRoute {
       service.all2().fold(
         {
           if (req.header("Accept") == "text/csv" ||
-            formatQuery(req).equals("csv", ignoreCase = true)) {
+            formatQuery(req).equals("csv", ignoreCase = true)
+          ) {
             foldAsCsv(it)
           } else {
             foldAsJson(it)

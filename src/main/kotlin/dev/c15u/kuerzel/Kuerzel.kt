@@ -2,6 +2,7 @@ package dev.c15u.kuerzel
 
 import dev.c15u.kuerzel.api.Add
 import dev.c15u.kuerzel.api.All
+import dev.c15u.kuerzel.api.mySecurity
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import org.http4k.contract.contract
 import org.http4k.contract.openapi.ApiInfo
@@ -29,7 +30,6 @@ import java.nio.file.Paths
 val routed = { service: Service ->
   val web = Web(service)
 
-  // TODO: get as CSV
   routes(
     "/api" bind contract {
       renderer = OpenApi3(
@@ -38,19 +38,12 @@ val routed = { service: Service ->
         servers = listOf(ApiServer(Uri.of("http://localhost:8000"), "the greatest server"))
       )
       descriptionPath = "/openapi.json"
-      // TODO: security
-//      security = mySecurity
+      security = mySecurity
 
       routes += Add(service)
       routes += All(service)
     },
     "/static" bind static(ResourceLoader.Classpath("/static")),
-//    "/style.css" bind GET to {
-//      Response(OK).body(
-//        AbbreviationHistory::class.java.getResourceAsStream("/style.css")?.reader()?.readText()
-//          ?: ""
-//      )
-//    },
     "/index.html" bind GET to {
       val query = it.query("q") ?: ""
       Response(OK).body(web.index(query))
@@ -60,7 +53,7 @@ val routed = { service: Service ->
       val full = it.form("full") ?: ""
       val link = it.form("link") ?: ""
       val description = it.form("description") ?: ""
-      val tag = it.form("tags")?.split(",") ?: listOf()
+      val tag = it.form("tags")?.split(", ") ?: listOf()
       service.add(short, full, link, description, tag)
         .fold({ Response(BAD_REQUEST) }, { Response(OK).with(AbbreviationHistory.lens of it) })
       Response(OK).body(web.index(short))
