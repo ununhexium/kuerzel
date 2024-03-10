@@ -2,7 +2,6 @@ package dev.c15u.kuerzel
 
 import dev.c15u.kuerzel.api.Add
 import dev.c15u.kuerzel.api.All
-import dev.c15u.kuerzel.api.mySecurity
 import dev.c15u.kuerzel.persistence.AbbreviationHistory
 import org.http4k.contract.contract
 import org.http4k.contract.openapi.ApiInfo
@@ -19,8 +18,10 @@ import org.http4k.core.with
 import org.http4k.format.Argo
 import org.http4k.lens.Query
 import org.http4k.lens.string
+import org.http4k.routing.ResourceLoader
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.routing.static
 import org.http4k.server.Undertow
 import org.http4k.server.asServer
 import java.nio.file.Paths
@@ -43,18 +44,13 @@ val routed = { service: Service ->
       routes += Add(service)
       routes += All(service)
     },
-    "/api/all.csv" bind GET to {
-      service.allCsv().fold(
-        { Response(BAD_REQUEST) },
-        { Response(OK).header("Content-Type", "test/csv").body(it) }
-      )
-    },
-    "/style.css" bind GET to {
-      Response(OK).body(
-        AbbreviationHistory::class.java.getResourceAsStream("/style.css")?.reader()?.readText()
-          ?: ""
-      )
-    },
+    "/static" bind static(ResourceLoader.Classpath("/static")),
+//    "/style.css" bind GET to {
+//      Response(OK).body(
+//        AbbreviationHistory::class.java.getResourceAsStream("/style.css")?.reader()?.readText()
+//          ?: ""
+//      )
+//    },
     "/index.html" bind GET to {
       val query = it.query("q") ?: ""
       Response(OK).body(web.index(query))

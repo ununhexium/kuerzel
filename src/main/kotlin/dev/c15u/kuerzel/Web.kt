@@ -79,7 +79,7 @@ class Web(val service: Service) {
       )
       link(
         rel = "stylesheet",
-        href = "/style.css"
+        href = "/static/style.css"
       )
 
       script(src = "https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.10/htmx.min.js") {
